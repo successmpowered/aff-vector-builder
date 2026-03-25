@@ -1,0 +1,1117 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Vector Testnet Explorer — Apex Fusion Foundation</title>
+<style>
+  :root {
+    --bg:         #0a0c12;
+    --surface:    #111520;
+    --surface2:   #181d2e;
+    --border:     #222840;
+    --text:       #e2e6f0;
+    --text-dim:   #7880a0;
+    --accent:     #5b67f8;
+    --accent2:    #818cf8;
+    --gold:       #f4b942;
+    --green:      #22d47a;
+    --red:        #f05252;
+    --blue:       #38bdf8;
+    --radius:     10px;
+    --font:       -apple-system, BlinkMacSystemFont, 'Inter', 'Segoe UI', sans-serif;
+    --mono:       'SF Mono', 'Cascadia Code', 'Consolas', monospace;
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: var(--font);
+    font-size: 14px;
+    line-height: 1.6;
+    min-height: 100vh;
+  }
+
+  /* ── NAV ── */
+  nav {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0 28px;
+    height: 60px;
+    background: var(--surface);
+    border-bottom: 1px solid var(--border);
+    position: sticky;
+    top: 0;
+    z-index: 100;
+  }
+
+  .nav-brand {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    font-size: 1rem;
+    font-weight: 700;
+    letter-spacing: -0.01em;
+  }
+
+  .nav-brand .logo {
+    width: 30px;
+    height: 30px;
+    background: linear-gradient(135deg, var(--accent), var(--gold));
+    border-radius: 8px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 14px;
+    font-weight: 900;
+    color: #fff;
+  }
+
+  .nav-meta {
+    display: flex;
+    align-items: center;
+    gap: 20px;
+    font-size: 0.78rem;
+    color: var(--text-dim);
+  }
+
+  .nav-meta .pill {
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    border-radius: 20px;
+    padding: 3px 10px;
+    font-size: 0.75rem;
+  }
+
+  .status-dot {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    background: var(--text-dim);
+    display: inline-block;
+    margin-right: 5px;
+  }
+  .status-dot.live { background: var(--green); box-shadow: 0 0 6px var(--green); animation: pulse 2s infinite; }
+  .status-dot.error { background: var(--red); }
+  .status-dot.loading { background: var(--gold); }
+
+  @keyframes pulse {
+    0%, 100% { opacity: 1; }
+    50% { opacity: 0.4; }
+  }
+
+  /* ── LAYOUT ── */
+  .container {
+    max-width: 1340px;
+    margin: 0 auto;
+    padding: 28px 24px;
+  }
+
+  /* ── CHAIN STATUS STRIP ── */
+  .chain-strip {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+    gap: 12px;
+    margin-bottom: 28px;
+  }
+
+  .stat-card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 16px 18px;
+  }
+
+  .stat-card .label {
+    font-size: 0.72rem;
+    color: var(--text-dim);
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    margin-bottom: 6px;
+  }
+
+  .stat-card .value {
+    font-size: 1.25rem;
+    font-weight: 700;
+    font-family: var(--mono);
+    color: var(--text);
+    line-height: 1.2;
+  }
+
+  .stat-card .sub {
+    font-size: 0.75rem;
+    color: var(--text-dim);
+    margin-top: 3px;
+  }
+
+  /* ── SECTION TITLES ── */
+  .section-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 14px;
+  }
+
+  .section-title {
+    font-size: 0.95rem;
+    font-weight: 700;
+    color: var(--text);
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+
+  .section-title .icon {
+    width: 22px;
+    height: 22px;
+    border-radius: 6px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 11px;
+  }
+  .icon-gold  { background: rgba(244,185,66,0.15); color: var(--gold); }
+  .icon-blue  { background: rgba(91,103,248,0.15); color: var(--accent2); }
+  .icon-green { background: rgba(34,212,122,0.15); color: var(--green); }
+
+  .section-note {
+    font-size: 0.73rem;
+    color: var(--text-dim);
+    font-style: italic;
+  }
+
+  /* ── TWO COLUMN ── */
+  .two-col {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 20px;
+    margin-bottom: 28px;
+  }
+
+  @media (max-width: 900px) {
+    .two-col { grid-template-columns: 1fr; }
+  }
+
+  /* ── TABLES ── */
+  .card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    overflow: hidden;
+  }
+
+  .card-header {
+    padding: 14px 18px;
+    border-bottom: 1px solid var(--border);
+    background: var(--surface2);
+  }
+
+  table {
+    width: 100%;
+    border-collapse: collapse;
+  }
+
+  thead th {
+    background: var(--surface2);
+    color: var(--text-dim);
+    font-size: 0.7rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.07em;
+    padding: 10px 14px;
+    text-align: left;
+    white-space: nowrap;
+  }
+
+  thead th.right { text-align: right; }
+
+  tbody tr {
+    border-bottom: 1px solid var(--border);
+    transition: background 0.1s;
+  }
+
+  tbody tr:last-child { border-bottom: none; }
+  tbody tr:hover { background: var(--surface2); }
+
+  tbody td {
+    padding: 11px 14px;
+    font-size: 0.82rem;
+    vertical-align: middle;
+  }
+
+  tbody td.right { text-align: right; }
+  tbody td.mono { font-family: var(--mono); font-size: 0.78rem; }
+
+  /* ── RANK BADGE ── */
+  .rank {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 22px;
+    height: 22px;
+    border-radius: 50%;
+    font-size: 0.72rem;
+    font-weight: 700;
+    background: var(--surface2);
+    color: var(--text-dim);
+    border: 1px solid var(--border);
+  }
+  .rank-1 { background: rgba(244,185,66,0.2); color: var(--gold); border-color: var(--gold); }
+  .rank-2 { background: rgba(226,230,240,0.15); color: #c8d0e0; border-color: #c8d0e0; }
+  .rank-3 { background: rgba(180,120,70,0.2); color: #d4916b; border-color: #d4916b; }
+
+  /* ── AMOUNT CHIPS ── */
+  .amount-large { color: var(--gold); font-weight: 700; }
+  .amount-mid   { color: var(--blue); font-weight: 600; }
+  .amount-small { color: var(--text); }
+
+  /* ── ADDRESS ── */
+  .addr {
+    font-family: var(--mono);
+    font-size: 0.75rem;
+    color: var(--accent2);
+    cursor: pointer;
+    text-decoration: none;
+  }
+  .addr:hover { color: var(--text); text-decoration: underline; }
+
+  /* ── TX HASH ── */
+  .txhash {
+    font-family: var(--mono);
+    font-size: 0.73rem;
+    color: var(--text-dim);
+  }
+
+  /* ── BADGES ── */
+  .badge {
+    display: inline-block;
+    padding: 2px 7px;
+    border-radius: 4px;
+    font-size: 0.68rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+  }
+  .badge-script  { background: rgba(91,103,248,0.2); color: var(--accent2); }
+  .badge-regular { background: rgba(34,212,122,0.12); color: var(--green); }
+
+  /* ── PROGRESS BARS ── */
+  .bar-wrap {
+    width: 100%;
+    background: var(--surface2);
+    border-radius: 3px;
+    height: 4px;
+    margin-top: 5px;
+  }
+  .bar { height: 4px; border-radius: 3px; background: linear-gradient(90deg, var(--accent), var(--gold)); }
+
+  /* ── LOADING / EMPTY STATES ── */
+  .loading-row td, .empty-row td {
+    text-align: center;
+    padding: 32px;
+    color: var(--text-dim);
+    font-size: 0.85rem;
+  }
+
+  .spinner {
+    display: inline-block;
+    width: 14px;
+    height: 14px;
+    border: 2px solid var(--border);
+    border-top-color: var(--accent);
+    border-radius: 50%;
+    animation: spin 0.8s linear infinite;
+    margin-right: 8px;
+    vertical-align: middle;
+  }
+
+  @keyframes spin { to { transform: rotate(360deg); } }
+
+  /* ── BUTTONS ── */
+  .btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    color: var(--text);
+    padding: 6px 14px;
+    border-radius: 6px;
+    font-size: 0.8rem;
+    cursor: pointer;
+    transition: background 0.15s, border-color 0.15s;
+  }
+  .btn:hover { background: var(--accent); border-color: var(--accent); }
+  .btn:disabled { opacity: 0.4; cursor: not-allowed; }
+
+  .btn-primary { background: var(--accent); border-color: var(--accent); }
+  .btn-primary:hover { background: var(--accent2); border-color: var(--accent2); }
+
+  /* ── SCAN DEPTH CONTROL ── */
+  .controls {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 20px;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 12px 18px;
+  }
+
+  .controls label { color: var(--text-dim); font-size: 0.8rem; }
+
+  .controls select {
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    color: var(--text);
+    padding: 5px 10px;
+    border-radius: 6px;
+    font-size: 0.8rem;
+    cursor: pointer;
+  }
+
+  .controls .sep { flex: 1; }
+
+  /* ── COUNTDOWN ── */
+  #countdownBadge {
+    font-size: 0.75rem;
+    color: var(--text-dim);
+    padding: 3px 10px;
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    border-radius: 20px;
+  }
+
+  /* ── FULL TX TABLE ── */
+  .full-card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    overflow: hidden;
+  }
+
+  /* ── TIMESTAMP ── */
+  .ts-date { color: var(--text); }
+  .ts-time { color: var(--text-dim); font-size: 0.75rem; display: block; }
+
+  /* ── SCROLL ── */
+  .scroll-x { overflow-x: auto; }
+
+  /* ── API HEALTH BANNER ── */
+  .api-banner {
+    border-radius: var(--radius);
+    padding: 12px 18px;
+    margin-bottom: 20px;
+    border: 1px solid var(--border);
+    background: var(--surface);
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    gap: 12px;
+  }
+  .api-banner.banner-ok      { border-color: rgba(34,212,122,0.4); background: rgba(34,212,122,0.05); }
+  .api-banner.banner-warn    { border-color: rgba(244,185,66,0.4); background: rgba(244,185,66,0.05); }
+  .api-banner.banner-error   { border-color: rgba(240,82,82,0.4);  background: rgba(240,82,82,0.05); }
+
+  .api-endpoints {
+    display: flex;
+    gap: 16px;
+    flex-wrap: wrap;
+  }
+  .ep {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 0.78rem;
+  }
+  .ep .dot {
+    width: 8px; height: 8px;
+    border-radius: 50%;
+    background: var(--text-dim);
+    flex-shrink: 0;
+  }
+  .ep .dot.up    { background: var(--green); box-shadow: 0 0 5px var(--green); }
+  .ep .dot.down  { background: var(--red);   box-shadow: 0 0 5px var(--red); }
+  .ep .dot.check { background: var(--gold);  animation: pulse 1s infinite; }
+  .ep .name  { color: var(--text-dim); }
+  .ep .code  { font-family: var(--mono); font-size: 0.72rem; }
+  .ep .code.ok   { color: var(--green); }
+  .ep .code.err  { color: var(--red); }
+  .ep .code.warn { color: var(--gold); }
+
+  .banner-msg { font-size: 0.8rem; flex: 1; min-width: 200px; }
+  .banner-msg strong { color: var(--text); }
+</style>
+</head>
+<body>
+
+<!-- ── NAV ── -->
+<nav>
+  <div class="nav-brand">
+    <div class="logo">AF</div>
+    <span>Vector Testnet Explorer</span>
+  </div>
+  <div class="nav-meta">
+    <span><span class="status-dot loading" id="statusDot"></span><span id="statusText">Connecting…</span></span>
+    <span class="pill" id="networkPill">Vector Testnet</span>
+    <span class="pill" id="lastRefresh">—</span>
+    <button class="btn btn-primary" id="refreshBtn" onclick="runScan()">&#x21bb; Refresh</button>
+  </div>
+</nav>
+
+<div class="container">
+
+  <!-- ── CHAIN STATUS STRIP ── -->
+  <div class="chain-strip">
+    <div class="stat-card">
+      <div class="label">Block Height</div>
+      <div class="value" id="blockHeight">—</div>
+      <div class="sub" id="blockSlot">—</div>
+    </div>
+    <div class="stat-card">
+      <div class="label">Epoch</div>
+      <div class="value" id="epochNo">—</div>
+      <div class="sub" id="epochSlot">—</div>
+    </div>
+    <div class="stat-card">
+      <div class="label">Txs Scanned</div>
+      <div class="value" id="txsScanned">—</div>
+      <div class="sub" id="blocksScanned">—</div>
+    </div>
+    <div class="stat-card">
+      <div class="label">Total AP3X Moved</div>
+      <div class="value" id="totalMoved">—</div>
+      <div class="sub">in scan window</div>
+    </div>
+    <div class="stat-card">
+      <div class="label">Unique Addresses</div>
+      <div class="value" id="uniqueAddrs">—</div>
+      <div class="sub">in scan window</div>
+    </div>
+    <div class="stat-card">
+      <div class="label">Largest Single Tx</div>
+      <div class="value" id="largestTx">—</div>
+      <div class="sub" id="largestTxDate">—</div>
+    </div>
+  </div>
+
+  <!-- ── API HEALTH BANNER ── -->
+  <div class="api-banner" id="apiBanner">
+    <div class="api-endpoints">
+      <div class="ep">
+        <span class="dot check" id="koiosDot"></span>
+        <span class="name">Koios</span>
+        <span class="code warn" id="koiosCode">checking…</span>
+      </div>
+    </div>
+    <div class="banner-msg" id="bannerMsg">Checking API connectivity…</div>
+    <button class="btn" onclick="checkApiHealth()" id="recheckBtn">Re-check</button>
+  </div>
+
+  <!-- ── CONTROLS ── -->
+  <div class="controls">
+    <label>Scan depth:</label>
+    <select id="scanDepth">
+      <option value="25">25 blocks</option>
+      <option value="50" selected>50 blocks</option>
+      <option value="100">100 blocks</option>
+      <option value="200">200 blocks</option>
+    </select>
+    <label style="margin-left:12px">Max txs per batch:</label>
+    <select id="maxTxs">
+      <option value="50">50</option>
+      <option value="100" selected>100</option>
+      <option value="200">200</option>
+    </select>
+    <span class="sep"></span>
+    <span id="countdownBadge">Auto-refresh in <span id="countdownVal">60</span>s</span>
+  </div>
+
+  <!-- ── TWO COLUMNS: TOP HOLDERS + TOP BLOCKS ── -->
+  <div class="two-col">
+
+    <!-- TOP 10 HOLDERS -->
+    <div class="card">
+      <div class="card-header">
+        <div class="section-header" style="margin-bottom:0">
+          <div class="section-title">
+            <div class="icon icon-gold">&#x25CF;</div>
+            Top 10 Wallets by AP3X Received
+          </div>
+          <span class="section-note">scan window only</span>
+        </div>
+      </div>
+      <div class="scroll-x">
+        <table>
+          <thead>
+            <tr>
+              <th>#</th>
+              <th>Address</th>
+              <th class="right">AP3X Received</th>
+              <th class="right">% of Window</th>
+            </tr>
+          </thead>
+          <tbody id="holdersBody">
+            <tr class="loading-row"><td colspan="4"><span class="spinner"></span>Loading…</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- TOP 10 BLOCKS BY OUTPUT -->
+    <div class="card">
+      <div class="card-header">
+        <div class="section-header" style="margin-bottom:0">
+          <div class="section-title">
+            <div class="icon icon-blue">&#x25A0;</div>
+            Top 10 Blocks by Output Value
+          </div>
+          <span class="section-note">AP3X total_output</span>
+        </div>
+      </div>
+      <div class="scroll-x">
+        <table>
+          <thead>
+            <tr>
+              <th>#</th>
+              <th>Block</th>
+              <th>Time</th>
+              <th class="right">AP3X Output</th>
+              <th class="right">Txs</th>
+            </tr>
+          </thead>
+          <tbody id="blocksBody">
+            <tr class="loading-row"><td colspan="5"><span class="spinner"></span>Loading…</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- ── FULL TX TABLE ── -->
+  <div class="full-card">
+    <div class="card-header">
+      <div class="section-header" style="margin-bottom:0">
+        <div class="section-title">
+          <div class="icon icon-green">&#x21C4;</div>
+          Largest Transactions — History &amp; Timestamps
+        </div>
+        <span class="section-note" id="txTableNote">sorted by AP3X output descending</span>
+      </div>
+    </div>
+    <div class="scroll-x">
+      <table>
+        <thead>
+          <tr>
+            <th>#</th>
+            <th>Tx Hash</th>
+            <th>Date &amp; Time</th>
+            <th class="right">Block</th>
+            <th class="right">AP3X Output</th>
+            <th class="right">Fee (AP3X)</th>
+            <th class="right">Inputs</th>
+            <th class="right">Outputs</th>
+            <th>Type</th>
+          </tr>
+        </thead>
+        <tbody id="txBody">
+          <tr class="loading-row"><td colspan="9"><span class="spinner"></span>Loading…</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+</div><!-- /container -->
+
+<script>
+// ============================================================
+// Config
+// ============================================================
+const KOIOS = "https://koios.vector.testnet.apexfusion.org/api/v1";
+
+// ============================================================
+// State
+// ============================================================
+let countdownVal = 60;
+let countdownTimer = null;
+
+// ============================================================
+// Helpers
+// ============================================================
+function lovelaceToAp3x(lv) {
+  const n = Number(BigInt(lv || 0));
+  return (n / 1_000_000).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 6 });
+}
+
+function fmtAp3x(lv) {
+  const n = Number(BigInt(lv || 0));
+  const ap = n / 1_000_000;
+  if (ap >= 1_000_000) return (ap / 1_000_000).toFixed(2) + "M";
+  if (ap >= 1_000)     return (ap / 1_000).toFixed(2) + "K";
+  return ap.toFixed(2);
+}
+
+function truncAddr(addr, start = 12, end = 8) {
+  if (!addr) return "—";
+  if (addr.length <= start + end + 3) return addr;
+  return addr.slice(0, start) + "…" + addr.slice(-end);
+}
+
+function truncHash(hash, start = 10, end = 8) {
+  if (!hash) return "—";
+  return hash.slice(0, start) + "…" + hash.slice(-end);
+}
+
+function fmtTimestamp(unix) {
+  if (!unix) return { date: "—", time: "" };
+  const d = new Date(unix * 1000);
+  return {
+    date: d.toLocaleDateString("en-GB", { day: "2-digit", month: "short", year: "numeric" }),
+    time: d.toLocaleTimeString("en-GB", { hour: "2-digit", minute: "2-digit", second: "2-digit" }) + " UTC"
+  };
+}
+
+function setStatus(state, text) {
+  document.getElementById("statusDot").className = "status-dot " + state;
+  document.getElementById("statusText").textContent = text;
+}
+
+function amountClass(ap3x) {
+  if (ap3x >= 100_000) return "amount-large";
+  if (ap3x >= 1_000)   return "amount-mid";
+  return "amount-small";
+}
+
+// ============================================================
+// API Health Check
+// ============================================================
+async function checkApiHealth() {
+  const dot  = document.getElementById("koiosDot");
+  const code = document.getElementById("koiosCode");
+  const msg  = document.getElementById("bannerMsg");
+  const banner = document.getElementById("apiBanner");
+
+  dot.className  = "dot check";
+  code.className = "code warn";
+  code.textContent = "checking…";
+  msg.innerHTML  = "Checking Koios API…";
+
+  try {
+    const ctrl = new AbortController();
+    const t = setTimeout(() => ctrl.abort(), 10000);
+    const r = await fetch(KOIOS + "/tip", { signal: ctrl.signal });
+    clearTimeout(t);
+
+    if (r.ok) {
+      dot.className  = "dot up";
+      code.className = "code ok";
+      code.textContent = "200 OK";
+      msg.innerHTML  = "<strong>Koios API is online.</strong> Data will load now.";
+      banner.className = "api-banner banner-ok";
+      return true;
+    } else {
+      dot.className  = "dot down";
+      code.className = "code err";
+      code.textContent = r.status + " " + r.statusText;
+      if (r.status === 503) {
+        msg.innerHTML = "<strong>Koios API is temporarily unavailable (503).</strong> The Vector testnet infrastructure is down. Dashboard will auto-retry every 60s.";
+      } else {
+        msg.innerHTML = `<strong>Koios returned ${r.status}.</strong> Unexpected response — check endpoint configuration.`;
+      }
+      setStatus("error", `API unavailable (${r.status}) — auto-retrying`);
+      banner.className = "api-banner banner-error";
+      return false;
+    }
+  } catch (e) {
+    dot.className  = "dot down";
+    code.className = "code err";
+    if (e.name === "AbortError") {
+      code.textContent = "timeout";
+      msg.innerHTML = "<strong>Request timed out.</strong> Koios API is not responding. Check your network connection.";
+      setStatus("error", "Request timed out — auto-retrying");
+    } else {
+      code.textContent = "unreachable";
+      msg.innerHTML = `<strong>Cannot reach Koios API.</strong> Network error — the API may be down or CORS blocked. <em>${e.message}</em>`;
+      setStatus("error", "Cannot reach API — auto-retrying");
+    }
+    banner.className = "api-banner banner-warn";
+    return false;
+  }
+}
+
+// ============================================================
+// Koios API
+// ============================================================
+async function koiosGet(path) {
+  const ctrl = new AbortController();
+  const t = setTimeout(() => ctrl.abort(), 15000);
+  let r;
+  try {
+    r = await fetch(KOIOS + path, { signal: ctrl.signal });
+  } catch (e) {
+    clearTimeout(t);
+    if (e.name === "AbortError") throw new Error("Request timed out — Koios API not responding");
+    throw new Error("Cannot reach Koios API — network error or CORS blocked");
+  }
+  clearTimeout(t);
+  if (!r.ok) throw new Error(`Koios API returned ${r.status} ${r.statusText} for ${path}`);
+  return r.json();
+}
+
+async function koiosPost(path, body) {
+  const ctrl = new AbortController();
+  const t = setTimeout(() => ctrl.abort(), 15000);
+  let r;
+  try {
+    r = await fetch(KOIOS + path, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(body),
+      signal: ctrl.signal
+    });
+  } catch (e) {
+    clearTimeout(t);
+    if (e.name === "AbortError") throw new Error("Request timed out — Koios API not responding");
+    throw new Error("Cannot reach Koios API — network error or CORS blocked");
+  }
+  clearTimeout(t);
+  if (!r.ok) throw new Error(`Koios API returned ${r.status} ${r.statusText} for ${path}`);
+  return r.json();
+}
+
+// ============================================================
+// Chain Tip
+// ============================================================
+async function fetchTip() {
+  const data = await koiosGet("/tip");
+  const t = data[0];
+  document.getElementById("blockHeight").textContent = Number(t.block_no).toLocaleString();
+  document.getElementById("blockSlot").textContent   = "Slot " + Number(t.abs_slot).toLocaleString();
+  document.getElementById("epochNo").textContent     = t.epoch_no;
+  document.getElementById("epochSlot").textContent   = "Epoch slot " + Number(t.epoch_slot).toLocaleString();
+  return t;
+}
+
+// ============================================================
+// Blocks
+// ============================================================
+async function fetchBlocks(limit) {
+  return koiosGet(`/blocks?order=block_height.desc&limit=${limit}`);
+}
+
+// ============================================================
+// Block Txs
+// ============================================================
+async function fetchBlockTxs(blockHashes) {
+  if (!blockHashes.length) return [];
+  const data = await koiosPost("/block_txs", { "_block_hashes": blockHashes });
+  // Returns [{block_hash, tx_hashes:[...]}, ...]
+  const all = [];
+  for (const b of data) {
+    for (const h of (b.tx_hashes || [])) {
+      all.push(h);
+    }
+  }
+  return all;
+}
+
+// ============================================================
+// Tx Info
+// ============================================================
+async function fetchTxInfo(txHashes) {
+  if (!txHashes.length) return [];
+  return koiosPost("/tx_info", { "_tx_hashes": txHashes });
+}
+
+// ============================================================
+// Main Scan
+// ============================================================
+async function runScan() {
+  const btn = document.getElementById("refreshBtn");
+  btn.disabled = true;
+  setStatus("loading", "Scanning…");
+
+  // Reset tables
+  const loadRow = (cols) => `<tr class="loading-row"><td colspan="${cols}"><span class="spinner"></span>Fetching…</td></tr>`;
+  document.getElementById("holdersBody").innerHTML  = loadRow(4);
+  document.getElementById("blocksBody").innerHTML   = loadRow(5);
+  document.getElementById("txBody").innerHTML       = loadRow(9);
+
+  try {
+    const depth  = parseInt(document.getElementById("scanDepth").value, 10);
+    const maxTxs = parseInt(document.getElementById("maxTxs").value, 10);
+
+    // 1. Tip
+    await fetchTip();
+
+    // 2. Recent blocks
+    const blocks = await fetchBlocks(depth);
+    const blocksWithTxs = blocks.filter(b => parseInt(b.tx_count || 0) > 0);
+
+    // Render top-blocks panel immediately (no tx detail needed)
+    renderTopBlocks(blocks);
+
+    // 3. Collect tx hashes from blocks that have transactions
+    const blockHashes = blocksWithTxs.map(b => b.hash);
+    let allTxHashes = await fetchBlockTxs(blockHashes);
+
+    // 4. Fetch tx info (capped)
+    const txHashesSample = allTxHashes.slice(0, maxTxs);
+    const txInfos = await fetchTxInfo(txHashesSample);
+
+    // 5. Build address → received map
+    const addrMap = {};
+    let totalLovelaceMoved = 0n;
+
+    for (const tx of txInfos) {
+      const outTotal = BigInt(tx.total_output || 0);
+      totalLovelaceMoved += outTotal;
+
+      for (const out of (tx.outputs || [])) {
+        const addr = out.payment_addr?.bech32 || out.address || "";
+        const val  = BigInt(out.value || 0);
+        if (!addr) continue;
+        addrMap[addr] = (addrMap[addr] || 0n) + val;
+      }
+    }
+
+    // 6. Top addresses
+    const topAddrs = Object.entries(addrMap)
+      .sort((a, b) => (b[1] > a[1] ? 1 : -1))
+      .slice(0, 10);
+
+    // 7. Sorted transactions (by total_output desc)
+    const sortedTxs = [...txInfos]
+      .sort((a, b) => {
+        const av = BigInt(a.total_output || 0);
+        const bv = BigInt(b.total_output || 0);
+        return bv > av ? 1 : bv < av ? -1 : 0;
+      });
+
+    // 8. Stats
+    const uniqueAddrs = Object.keys(addrMap).length;
+    document.getElementById("txsScanned").textContent      = txInfos.length.toLocaleString();
+    document.getElementById("blocksScanned").textContent   = `across ${blocksWithTxs.length} blocks`;
+    document.getElementById("totalMoved").textContent      = fmtAp3x(totalLovelaceMoved) + " AP3X";
+    document.getElementById("uniqueAddrs").textContent     = uniqueAddrs.toLocaleString();
+
+    if (sortedTxs.length > 0) {
+      const top = sortedTxs[0];
+      document.getElementById("largestTx").textContent = fmtAp3x(top.total_output) + " AP3X";
+      const ts = fmtTimestamp(top.tx_timestamp);
+      document.getElementById("largestTxDate").textContent = ts.date + " " + ts.time;
+    }
+
+    // 9. Render
+    renderTopHolders(topAddrs, totalLovelaceMoved);
+    renderTxTable(sortedTxs);
+
+    document.getElementById("txTableNote").textContent =
+      `${txInfos.length} txs from ${blocksWithTxs.length} blocks — sorted by AP3X output descending`;
+
+    document.getElementById("lastRefresh").textContent =
+      "Updated " + new Date().toLocaleTimeString();
+
+    setStatus("live", "Live");
+    resetCountdown();
+
+  } catch (err) {
+    console.error(err);
+    // Classify the error for a useful status message
+    const msg = err.message || "Unknown error";
+    const isDown    = msg.includes("503");
+    const isTimeout = msg.includes("timed out");
+    const isNetwork = msg.includes("network error") || msg.includes("CORS");
+
+    let statusMsg;
+    if (isDown)    statusMsg = "API unavailable (503) — retrying in 60s";
+    else if (isTimeout) statusMsg = "Request timed out — retrying in 60s";
+    else if (isNetwork) statusMsg = "Network error — check connection";
+    else           statusMsg = msg;
+
+    setStatus("error", statusMsg);
+    await checkApiHealth();
+
+    const errRow = (cols) => `<tr class="empty-row"><td colspan="${cols}" style="color:var(--text-dim);padding:28px;text-align:center">
+      <div style="font-size:1.1rem;margin-bottom:6px">⚠</div>
+      <div style="font-weight:600;color:var(--text);margin-bottom:4px">${isDown ? "API Temporarily Unavailable" : isNetwork ? "Cannot Reach API" : "Error"}</div>
+      <div style="font-size:0.78rem">${msg}</div>
+    </td></tr>`;
+    document.getElementById("holdersBody").innerHTML  = errRow(4);
+    document.getElementById("blocksBody").innerHTML   = errRow(5);
+    document.getElementById("txBody").innerHTML       = errRow(9);
+
+    resetCountdown(); // still auto-retry
+  }
+
+  btn.disabled = false;
+}
+
+// ============================================================
+// Render: Top Holders
+// ============================================================
+function renderTopHolders(topAddrs, totalLovelaceMoved) {
+  const tbody = document.getElementById("holdersBody");
+  if (!topAddrs.length) {
+    tbody.innerHTML = `<tr class="empty-row"><td colspan="4">No address data found in scan window.</td></tr>`;
+    return;
+  }
+
+  const maxVal = topAddrs[0][1];
+
+  tbody.innerHTML = topAddrs.map(([addr, val], i) => {
+    const rank = i + 1;
+    const ap3x = Number(val) / 1_000_000;
+    const pct  = totalLovelaceMoved > 0n
+      ? ((Number(val) / Number(totalLovelaceMoved)) * 100).toFixed(1)
+      : "0.0";
+    const barWidth = maxVal > 0n ? ((Number(val) / Number(maxVal)) * 100).toFixed(1) : 0;
+    const rankClass = rank <= 3 ? `rank rank-${rank}` : "rank";
+    const cls = amountClass(ap3x);
+
+    return `<tr>
+      <td><span class="${rankClass}">${rank}</span></td>
+      <td>
+        <a class="addr" href="https://koios.vector.testnet.apexfusion.org/api/v1/address_info?_address=${encodeURIComponent(addr)}"
+           title="${addr}" target="_blank" rel="noopener">${truncAddr(addr)}</a>
+      </td>
+      <td class="right">
+        <span class="${cls}">${ap3x.toLocaleString(undefined, {minimumFractionDigits:2, maximumFractionDigits:2})} AP3X</span>
+        <div class="bar-wrap"><div class="bar" style="width:${barWidth}%"></div></div>
+      </td>
+      <td class="right">${pct}%</td>
+    </tr>`;
+  }).join("");
+}
+
+// ============================================================
+// Render: Top Blocks
+// ============================================================
+function renderTopBlocks(blocks) {
+  const tbody = document.getElementById("blocksBody");
+
+  const sorted = [...blocks]
+    .filter(b => parseInt(b.total_output || 0) > 0)
+    .sort((a, b) => {
+      const av = BigInt(a.total_output || 0);
+      const bv = BigInt(b.total_output || 0);
+      return bv > av ? 1 : bv < av ? -1 : 0;
+    })
+    .slice(0, 10);
+
+  if (!sorted.length) {
+    tbody.innerHTML = `<tr class="empty-row"><td colspan="5">No blocks with output found.</td></tr>`;
+    return;
+  }
+
+  tbody.innerHTML = sorted.map((b, i) => {
+    const rank = i + 1;
+    const rankClass = rank <= 3 ? `rank rank-${rank}` : "rank";
+    const ts  = fmtTimestamp(b.block_time);
+    const ap3x = Number(BigInt(b.total_output || 0)) / 1_000_000;
+    const cls  = amountClass(ap3x);
+
+    return `<tr>
+      <td><span class="${rankClass}">${rank}</span></td>
+      <td>
+        <span class="mono txhash" title="${b.hash}">#${Number(b.block_height).toLocaleString()}</span>
+      </td>
+      <td>
+        <span class="ts-date">${ts.date}</span>
+        <span class="ts-time">${ts.time}</span>
+      </td>
+      <td class="right"><span class="${cls}">${fmtAp3x(b.total_output)} AP3X</span></td>
+      <td class="right">${b.tx_count}</td>
+    </tr>`;
+  }).join("");
+}
+
+// ============================================================
+// Render: Transaction Table
+// ============================================================
+function renderTxTable(txs) {
+  const tbody = document.getElementById("txBody");
+
+  if (!txs.length) {
+    tbody.innerHTML = `<tr class="empty-row"><td colspan="9">No transactions found in scan window.</td></tr>`;
+    return;
+  }
+
+  tbody.innerHTML = txs.map((tx, i) => {
+    const ts     = fmtTimestamp(tx.tx_timestamp);
+    const ap3x   = Number(BigInt(tx.total_output || 0)) / 1_000_000;
+    const fee    = Number(BigInt(tx.fee || 0)) / 1_000_000;
+    const inputs = (tx.inputs  || []).length;
+    const outs   = (tx.outputs || []).length;
+    const cls    = amountClass(ap3x);
+
+    // Script tx if any input or output has a datum / script
+    const isScript = (tx.inputs  || []).some(i => i.datum_hash || i.inline_datum) ||
+                     (tx.outputs || []).some(o => o.datum_hash || o.inline_datum);
+    const typeBadge = isScript
+      ? `<span class="badge badge-script">Script</span>`
+      : `<span class="badge badge-regular">Transfer</span>`;
+
+    return `<tr>
+      <td>${i + 1}</td>
+      <td>
+        <span class="txhash" title="${tx.tx_hash}">${truncHash(tx.tx_hash)}</span>
+      </td>
+      <td>
+        <span class="ts-date">${ts.date}</span>
+        <span class="ts-time">${ts.time}</span>
+      </td>
+      <td class="right mono">${Number(tx.block_height).toLocaleString()}</td>
+      <td class="right"><span class="${cls}">${ap3x.toLocaleString(undefined, {minimumFractionDigits:2, maximumFractionDigits:2})} AP3X</span></td>
+      <td class="right" style="color:var(--text-dim)">${fee.toFixed(4)}</td>
+      <td class="right">${inputs}</td>
+      <td class="right">${outs}</td>
+      <td>${typeBadge}</td>
+    </tr>`;
+  }).join("");
+}
+
+// ============================================================
+// Auto-Refresh Countdown
+// ============================================================
+function resetCountdown() {
+  countdownVal = 60;
+  clearInterval(countdownTimer);
+  countdownTimer = setInterval(() => {
+    countdownVal--;
+    document.getElementById("countdownVal").textContent = countdownVal;
+    if (countdownVal <= 0) {
+      clearInterval(countdownTimer);
+      runScan();
+    }
+  }, 1000);
+}
+
+// ============================================================
+// Boot
+// ============================================================
+window.addEventListener("load", async () => {
+  const ok = await checkApiHealth();
+  if (ok) {
+    runScan();
+  } else {
+    // Show waiting state in all tables
+    const waitRow = (cols) => `<tr class="empty-row"><td colspan="${cols}" style="text-align:center;padding:28px;color:var(--text-dim)">
+      Waiting for API connection — will retry automatically
+    </td></tr>`;
+    document.getElementById("holdersBody").innerHTML = waitRow(4);
+    document.getElementById("blocksBody").innerHTML  = waitRow(5);
+    document.getElementById("txBody").innerHTML      = waitRow(9);
+    resetCountdown();
+  }
+});
+</script>
+
+</body>
+</html>

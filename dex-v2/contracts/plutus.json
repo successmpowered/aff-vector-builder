@@ -1,0 +1,411 @@
+{
+  "preamble": {
+    "title": "vector/dex-v2",
+    "description": "Masumi-style payment escrow for Vector testnet",
+    "version": "0.0.1",
+    "plutusVersion": "v3",
+    "compiler": {
+      "name": "Aiken",
+      "version": "v1.1.19+e525483"
+    }
+  },
+  "validators": [
+    {
+      "title": "dex_v2_amm_pool.dex_v2_amm_pool.spend",
+      "datum": {
+        "title": "datum",
+        "schema": {
+          "$ref": "#/definitions/dex_v2_amm_pool~1PoolDatum"
+        }
+      },
+      "redeemer": {
+        "title": "redeemer",
+        "schema": {
+          "$ref": "#/definitions/dex_v2_amm_pool~1PoolAction"
+        }
+      },
+      "compiledCode": "5904cc01010029800aba2aba1aba0aab9faab9eaab9dab9a488888896600264653001300800198041804800cdc3a400530080024888966002600460106ea800e26466453001159800980098059baa0028cc004c03cc030dd500148c040c044c044006460206022003222323322330020020012259800800c00e2646644b30013372200e00515980099b8f0070028800c01901344cc014014c0640110131bae3012001375a6026002602a0028098c8c8cc004004018896600200300389919912cc004cdc8804801456600266e3c02400a20030064051133005005301a00440506eb8c04c004dd5980a000980b000a02814bd6f7b6300a40013710900024444464b3001300730113754003132325980099b8748010c04cdd5000c4c966002601460286ea8006264646464646464653001375a6040003375c6040011375c604000f375c604000d375c604000b375c6040009375a6040007375a6040004911111112cc004c0a40262b30013371e6eb8c0a0c094dd50089bae30283025375403315980099b8f375c602e604a6ea8044dd7180b98129baa0198992cc004cdc79bae3001302637540246eb8c004c098dd500d45660026466e1cdd6980098139baa013375a6002604e6ea806c8c0a8c0acc0acc0acc0acc0ac0062b3001323370e6eb4c004c09cdd50099bad300130273754036460546056605660566056605660560031329800cc0040566eb8c064c09cdd500dcdd7180d18139baa01b4005980080acdd7180118139baa01b9bae302a302b302b302b302b30273754036800a604c6ea808a46056605860586058605860586058605800291112cc004c08000a2b3001301b375a605c60566ea809a2b30013370e6eb4c004c0acdd500b9bad3001302b375403f159800980d8024566002603600714a31640a51640a51640a51640a5159800981200144c966002603800315980099b88375a600460586ea8080dd6980118161baa0188acc004cdc480099b81375a600460586ea8060dd6980118161baa0208acc004c0700162b3001301c0048a518b20548b20548b20548b20548b2054375a605c60566ea809a264b3001301c0018acc004cdc39bad3002302c375403066e04dd6980118161baa0200018acc004c0700162b3001301c0048a518b20548b20548b20548b2054375a605c60566ea809902920521112cc004cdc7801245008cc004dd5980d98149baa003a44100a441004069198009bab301b30293754007002800a034409d1640911640911640904605260546054605400316408d16408d1640983020001301f001301e001301d001301c001301b001301a0013015375400316404c602e60286ea80062c8090c018c04cdd5000980a98091baa0018b2020323322330020020012259800800c530103d87a80008992cc004c01660026eacc01cc054dd5000c01291100401913374a90001980b800a5eb8226600600660320048098c05c0050151bac3005301237540146eb8c050c044dd5002a2c805260166ea801e601e0069112cc004c01000a26464b30013015002802c590121bad3013001300f3754015159800980400144c8c966002602a0050058b2024375a6026002601e6ea802a2b30013370e900200144c8c966002602a0050058b2024375a6026002601e6ea802a2c806900d201a180698070009b8748000c024dd5001c590070c020004c00cdd5004452689b2b20021",
+      "hash": "5dcf79eae6e66bc1b8684b1cdd7ba44d06b4ae994ec25743cbe41014"
+    },
+    {
+      "title": "dex_v2_amm_pool.dex_v2_amm_pool.else",
+      "redeemer": {
+        "schema": {}
+      },
+      "compiledCode": "5904cc01010029800aba2aba1aba0aab9faab9eaab9dab9a488888896600264653001300800198041804800cdc3a400530080024888966002600460106ea800e26466453001159800980098059baa0028cc004c03cc030dd500148c040c044c044006460206022003222323322330020020012259800800c00e2646644b30013372200e00515980099b8f0070028800c01901344cc014014c0640110131bae3012001375a6026002602a0028098c8c8cc004004018896600200300389919912cc004cdc8804801456600266e3c02400a20030064051133005005301a00440506eb8c04c004dd5980a000980b000a02814bd6f7b6300a40013710900024444464b3001300730113754003132325980099b8748010c04cdd5000c4c966002601460286ea8006264646464646464653001375a6040003375c6040011375c604000f375c604000d375c604000b375c6040009375a6040007375a6040004911111112cc004c0a40262b30013371e6eb8c0a0c094dd50089bae30283025375403315980099b8f375c602e604a6ea8044dd7180b98129baa0198992cc004cdc79bae3001302637540246eb8c004c098dd500d45660026466e1cdd6980098139baa013375a6002604e6ea806c8c0a8c0acc0acc0acc0acc0ac0062b3001323370e6eb4c004c09cdd50099bad300130273754036460546056605660566056605660560031329800cc0040566eb8c064c09cdd500dcdd7180d18139baa01b4005980080acdd7180118139baa01b9bae302a302b302b302b302b30273754036800a604c6ea808a46056605860586058605860586058605800291112cc004c08000a2b3001301b375a605c60566ea809a2b30013370e6eb4c004c0acdd500b9bad3001302b375403f159800980d8024566002603600714a31640a51640a51640a51640a5159800981200144c966002603800315980099b88375a600460586ea8080dd6980118161baa0188acc004cdc480099b81375a600460586ea8060dd6980118161baa0208acc004c0700162b3001301c0048a518b20548b20548b20548b20548b2054375a605c60566ea809a264b3001301c0018acc004cdc39bad3002302c375403066e04dd6980118161baa0200018acc004c0700162b3001301c0048a518b20548b20548b20548b2054375a605c60566ea809902920521112cc004cdc7801245008cc004dd5980d98149baa003a44100a441004069198009bab301b30293754007002800a034409d1640911640911640904605260546054605400316408d16408d1640983020001301f001301e001301d001301c001301b001301a0013015375400316404c602e60286ea80062c8090c018c04cdd5000980a98091baa0018b2020323322330020020012259800800c530103d87a80008992cc004c01660026eacc01cc054dd5000c01291100401913374a90001980b800a5eb8226600600660320048098c05c0050151bac3005301237540146eb8c050c044dd5002a2c805260166ea801e601e0069112cc004c01000a26464b30013015002802c590121bad3013001300f3754015159800980400144c8c966002602a0050058b2024375a6026002601e6ea802a2b30013370e900200144c8c966002602a0050058b2024375a6026002601e6ea802a2c806900d201a180698070009b8748000c024dd5001c590070c020004c00cdd5004452689b2b20021",
+      "hash": "5dcf79eae6e66bc1b8684b1cdd7ba44d06b4ae994ec25743cbe41014"
+    },
+    {
+      "title": "dex_v2_limit_order.dex_v2_limit_order.spend",
+      "datum": {
+        "title": "datum",
+        "schema": {
+          "$ref": "#/definitions/dex_v2_limit_order~1LimitOrderDatum"
+        }
+      },
+      "redeemer": {
+        "title": "redeemer",
+        "schema": {
+          "$ref": "#/definitions/dex_v2_limit_order~1OrderAction"
+        }
+      },
+      "compiledCode": "5905f501010029800aba2aba1aba0aab9faab9eaab9dab9a488888896600264653001300800198041804800cdc3a400530080024888966002600460106ea800e26466453001159800980098059baa0028cc004c03cc030dd50014c02cdd5003c8c040c044c044c044c044c044c044c04400646020602260226022003222323322330020020012259800800c00e2646644b30013372200e00515980099b8f0070028800c01901344cc014014c0640110131bae3012001375a6026002602a0028098c8c8cc004004018896600200300389919912cc004cdc8804801456600266e3c02400a20030064051133005005301a00440506eb8c04c004dd5980a000980b000a02814bd6f7b6300a400123010301100191192cc004c010c038dd5000c4cdc79bae3012300f375400200514a08068c044c038dd5180898071baa0029180818089808800c8896600200514c0103d87a80008acc004c010006266e9520003301130120024bd70466002007301300299b8000148005003201a40413710900024444444444653001225980099b8800148002298103d87a8000899801801000a02e912cc004cdc79bae301c30193754002911008cc004dd59804180c9baa002a44100a441004025198009bab300830193754005375c603860326ea80066eb8c020c064dd5000a012405d2232598009809980c9baa001899b88375a603a60346ea800400a2941018180e180c9baa301c30193754601660326ea8009222598009807806c4c966002602060346ea8006264b30013300a001375c603e60386ea80422b3001337126eb4c034c070dd5008198020009804980e1baa0108acc004c01cdd69807180e1baa01089980180a1bad300e301c375402114a280d2294101a45282034301e301b3754003164064660066eb0c01cc068dd50091bad301d301a375402b1598009809806c4c8ca60026eb4c07c0066eb4c07cc0800066eb4c07c00922259800980500144c8cc8966002602e60426ea800626644b30013019302337540031325980099b8748010c090dd5000c4cc89660026038604c6ea800a264646464646464653001375a6064003375c606401130320069bad30320059bad30320049bad30320039bae303200248888889660026074011133010303900e133010005132598009811000c56600266e3cdd7181d181b9baa012375c6074606e6ea80ae2b3001323371e6eb8c004c0e0dd50099bae3001303837540584607660786078607860786078607800315980099b89337026eb4c0a0c0dcdd501580b9bad30283037375402515980099b87375a6030606e6ea80480062b300133025015375c6074606e6ea80ae2b30013371202e6603e02a6048606e6ea80ae2b30013022375a6052606e6ea80ae26603c05e6eb4c0a4c0dcdd5015c528a06a8a5040d514a081aa2c81aa2c81aa2c81aa2c81aa2c81a8cdc09bad3017303637540540331640dc303200130310013030001302f001302e001302d001302c001302737540051640946050604a6ea800489660026038604c6ea800a264646644b3001302f003802c5902c1bae302c001375c60580046058002604e6ea800a2c812a2c8118c044c090dd5181398121baa0018b2044302530223754002660166eb0c03cc088dd500d003459020192cc004cdc4000a400514800a200280f8cdc199b803370066e0800cdd6980898101baa014375a600260406ea80512001375a600260406ea8050cc024dd6180698101baa0180022302330243024302430240018b203a180f800980d1baa015899199119801001000912cc00400629422b30013371e6eb8c08000400e2946266004004604200280d901e1bac301e301f301f301f301f301f301f301f301f301b37540266eb8c074c068dd500720304060300200245900a4c02cdd5003cc03c00d22259800980200144c8c966002602a0050058b2024375a6026002601e6ea802a2b3001300800289919194c004dd6980a800cdd6980a801cdd6980a8012444b30013019004804c590160c054004c050004c03cdd5005456600266e1d20040028acc004c03cdd5005400e2c80822c806900d201a180698070009b8748000c024dd5001c590070c020004c00cdd5004452689b2b200201",
+      "hash": "64aa0ba7c7368f7f58aca0ac9eba4ff77da99ebf216598f946976ae8"
+    },
+    {
+      "title": "dex_v2_limit_order.dex_v2_limit_order.else",
+      "redeemer": {
+        "schema": {}
+      },
+      "compiledCode": "5905f501010029800aba2aba1aba0aab9faab9eaab9dab9a488888896600264653001300800198041804800cdc3a400530080024888966002600460106ea800e26466453001159800980098059baa0028cc004c03cc030dd50014c02cdd5003c8c040c044c044c044c044c044c044c04400646020602260226022003222323322330020020012259800800c00e2646644b30013372200e00515980099b8f0070028800c01901344cc014014c0640110131bae3012001375a6026002602a0028098c8c8cc004004018896600200300389919912cc004cdc8804801456600266e3c02400a20030064051133005005301a00440506eb8c04c004dd5980a000980b000a02814bd6f7b6300a400123010301100191192cc004c010c038dd5000c4cdc79bae3012300f375400200514a08068c044c038dd5180898071baa0029180818089808800c8896600200514c0103d87a80008acc004c010006266e9520003301130120024bd70466002007301300299b8000148005003201a40413710900024444444444653001225980099b8800148002298103d87a8000899801801000a02e912cc004cdc79bae301c30193754002911008cc004dd59804180c9baa002a44100a441004025198009bab300830193754005375c603860326ea80066eb8c020c064dd5000a012405d2232598009809980c9baa001899b88375a603a60346ea800400a2941018180e180c9baa301c30193754601660326ea8009222598009807806c4c966002602060346ea8006264b30013300a001375c603e60386ea80422b3001337126eb4c034c070dd5008198020009804980e1baa0108acc004c01cdd69807180e1baa01089980180a1bad300e301c375402114a280d2294101a45282034301e301b3754003164064660066eb0c01cc068dd50091bad301d301a375402b1598009809806c4c8ca60026eb4c07c0066eb4c07cc0800066eb4c07c00922259800980500144c8cc8966002602e60426ea800626644b30013019302337540031325980099b8748010c090dd5000c4cc89660026038604c6ea800a264646464646464653001375a6064003375c606401130320069bad30320059bad30320049bad30320039bae303200248888889660026074011133010303900e133010005132598009811000c56600266e3cdd7181d181b9baa012375c6074606e6ea80ae2b3001323371e6eb8c004c0e0dd50099bae3001303837540584607660786078607860786078607800315980099b89337026eb4c0a0c0dcdd501580b9bad30283037375402515980099b87375a6030606e6ea80480062b300133025015375c6074606e6ea80ae2b30013371202e6603e02a6048606e6ea80ae2b30013022375a6052606e6ea80ae26603c05e6eb4c0a4c0dcdd5015c528a06a8a5040d514a081aa2c81aa2c81aa2c81aa2c81aa2c81a8cdc09bad3017303637540540331640dc303200130310013030001302f001302e001302d001302c001302737540051640946050604a6ea800489660026038604c6ea800a264646644b3001302f003802c5902c1bae302c001375c60580046058002604e6ea800a2c812a2c8118c044c090dd5181398121baa0018b2044302530223754002660166eb0c03cc088dd500d003459020192cc004cdc4000a400514800a200280f8cdc199b803370066e0800cdd6980898101baa014375a600260406ea80512001375a600260406ea8050cc024dd6180698101baa0180022302330243024302430240018b203a180f800980d1baa015899199119801001000912cc00400629422b30013371e6eb8c08000400e2946266004004604200280d901e1bac301e301f301f301f301f301f301f301f301f301b37540266eb8c074c068dd500720304060300200245900a4c02cdd5003cc03c00d22259800980200144c8c966002602a0050058b2024375a6026002601e6ea802a2b3001300800289919194c004dd6980a800cdd6980a801cdd6980a8012444b30013019004804c590160c054004c050004c03cdd5005456600266e1d20040028acc004c03cdd5005400e2c80822c806900d201a180698070009b8748000c024dd5001c590070c020004c00cdd5004452689b2b200201",
+      "hash": "64aa0ba7c7368f7f58aca0ac9eba4ff77da99ebf216598f946976ae8"
+    },
+    {
+      "title": "dex_v2_matcher.dex_v2_matcher.spend",
+      "datum": {
+        "title": "datum",
+        "schema": {
+          "$ref": "#/definitions/dex_v2_matcher~1BatchDatum"
+        }
+      },
+      "redeemer": {
+        "title": "redeemer",
+        "schema": {
+          "$ref": "#/definitions/dex_v2_matcher~1MatchAction"
+        }
+      },
+      "compiledCode": "5902de01010029800aba2aba1aab9faab9eaab9dab9a48888896600264653001300700198039804000cc01c0092225980099b8748008c01cdd500144c8cc8a60022b30013001300a375400513259800980118059baa007899912cc004cdc7994c0040060074881004004444b30010028800c6600200730140029b94337140026e50dd7180998089baa3013002400c8090dd7180098071baa0038992cc004cdc399b8232330010010042259800800c52000899b8048008cc008008c05000501224181087a6eb4c004c03cdd500245660026466446600400400244b30010018a508acc004cdc79bae30140010038a51899801001180a800a020404c6eb0c048c04cc04cc04cc04cc04cc04cc04cc04cc040dd50049bae3011300f3754009132330010010042259800800c528c566003300130130019180a180a980a980a980a800c8c050c054c054c054c054c0540066e212000488896600260026eb4c01cc054dd5002456600260026eb4c020c054dd5002456600260026eb4c00cc054dd5002456600260026eb4c008c054dd500244cdc499b82375a600e602a6ea8010dd69801980a9baa004337046eb4c008c054dd50021bad30083015375400916404d16404d16404d16404c899801001180a000c528201e404916403516403446022602460240031640306eb0c038c030dd500391807980818081808000c528a014300d300b3754005164025300a375400d300d0034889660026008005132598009809000c4c8cc004004dd61809001112cc00400600d13259800980418089baa00189919191919194c004dd6980d000cdd7180d0034dd7180d002cdd6980d0024dd6980d001cdd6980d0012444444b30013021007899807807981080745901f0c068004c064004c060004c05c004c058004c048dd5000c590101809800a0248b2020300e375401315980099b874800800a2b3001300e37540130038b201e8b20184030300b300c001370e900018041baa0028b200c180380098019baa0078a4d1365640041",
+      "hash": "effe1b4f7d8b95c9b7397372fbaa6131b453a98e78ae830bf3f33a66"
+    },
+    {
+      "title": "dex_v2_matcher.dex_v2_matcher.else",
+      "redeemer": {
+        "schema": {}
+      },
+      "compiledCode": "5902de01010029800aba2aba1aab9faab9eaab9dab9a48888896600264653001300700198039804000cc01c0092225980099b8748008c01cdd500144c8cc8a60022b30013001300a375400513259800980118059baa007899912cc004cdc7994c0040060074881004004444b30010028800c6600200730140029b94337140026e50dd7180998089baa3013002400c8090dd7180098071baa0038992cc004cdc399b8232330010010042259800800c52000899b8048008cc008008c05000501224181087a6eb4c004c03cdd500245660026466446600400400244b30010018a508acc004cdc79bae30140010038a51899801001180a800a020404c6eb0c048c04cc04cc04cc04cc04cc04cc04cc04cc040dd50049bae3011300f3754009132330010010042259800800c528c566003300130130019180a180a980a980a980a800c8c050c054c054c054c054c0540066e212000488896600260026eb4c01cc054dd5002456600260026eb4c020c054dd5002456600260026eb4c00cc054dd5002456600260026eb4c008c054dd500244cdc499b82375a600e602a6ea8010dd69801980a9baa004337046eb4c008c054dd50021bad30083015375400916404d16404d16404d16404c899801001180a000c528201e404916403516403446022602460240031640306eb0c038c030dd500391807980818081808000c528a014300d300b3754005164025300a375400d300d0034889660026008005132598009809000c4c8cc004004dd61809001112cc00400600d13259800980418089baa00189919191919194c004dd6980d000cdd7180d0034dd7180d002cdd6980d0024dd6980d001cdd6980d0012444444b30013021007899807807981080745901f0c068004c064004c060004c05c004c058004c048dd5000c590101809800a0248b2020300e375401315980099b874800800a2b3001300e37540130038b201e8b20184030300b300c001370e900018041baa0028b200c180380098019baa0078a4d1365640041",
+      "hash": "effe1b4f7d8b95c9b7397372fbaa6131b453a98e78ae830bf3f33a66"
+    }
+  ],
+  "definitions": {
+    "ByteArray": {
+      "dataType": "bytes"
+    },
+    "Int": {
+      "dataType": "integer"
+    },
+    "List$dex_v2_matcher/MatchProof": {
+      "dataType": "list",
+      "items": {
+        "$ref": "#/definitions/dex_v2_matcher~1MatchProof"
+      }
+    },
+    "aiken/crypto/VerificationKeyHash": {
+      "title": "VerificationKeyHash",
+      "dataType": "bytes"
+    },
+    "cardano/assets/AssetName": {
+      "title": "AssetName",
+      "dataType": "bytes"
+    },
+    "cardano/assets/PolicyId": {
+      "title": "PolicyId",
+      "dataType": "bytes"
+    },
+    "dex_v2_amm_pool/PoolAction": {
+      "title": "PoolAction",
+      "anyOf": [
+        {
+          "title": "Swap",
+          "dataType": "constructor",
+          "index": 0,
+          "fields": [
+            {
+              "title": "min_output",
+              "$ref": "#/definitions/Int"
+            }
+          ]
+        },
+        {
+          "title": "AddLiquidity",
+          "dataType": "constructor",
+          "index": 1,
+          "fields": [
+            {
+              "title": "min_lp",
+              "$ref": "#/definitions/Int"
+            }
+          ]
+        },
+        {
+          "title": "RemoveLiquidity",
+          "dataType": "constructor",
+          "index": 2,
+          "fields": [
+            {
+              "title": "lp_burned",
+              "$ref": "#/definitions/Int"
+            }
+          ]
+        }
+      ]
+    },
+    "dex_v2_amm_pool/PoolDatum": {
+      "title": "PoolDatum",
+      "description": "============================================================================\n DEX V2: CONSTANT-PRODUCT AMM POOL (x * y = k)\n ============================================================================\n\n Anti-MEV: Deterministic UTXO execution means tx outcome is known at build\n time. Combined with on-chain slippage check, sandwich attacks are impossible.",
+      "anyOf": [
+        {
+          "title": "PoolDatum",
+          "dataType": "constructor",
+          "index": 0,
+          "fields": [
+            {
+              "title": "pool_nft_policy",
+              "$ref": "#/definitions/cardano~1assets~1PolicyId"
+            },
+            {
+              "title": "token_a_policy",
+              "$ref": "#/definitions/cardano~1assets~1PolicyId"
+            },
+            {
+              "title": "token_a_name",
+              "$ref": "#/definitions/cardano~1assets~1AssetName"
+            },
+            {
+              "title": "token_b_policy",
+              "$ref": "#/definitions/cardano~1assets~1PolicyId"
+            },
+            {
+              "title": "token_b_name",
+              "$ref": "#/definitions/cardano~1assets~1AssetName"
+            },
+            {
+              "title": "fee_num",
+              "$ref": "#/definitions/Int"
+            },
+            {
+              "title": "fee_den",
+              "$ref": "#/definitions/Int"
+            },
+            {
+              "title": "lp_supply",
+              "$ref": "#/definitions/Int"
+            }
+          ]
+        }
+      ]
+    },
+    "dex_v2_limit_order/LimitOrderDatum": {
+      "title": "LimitOrderDatum",
+      "description": "A limit order: offer token_a, want at least min_receive of token_b",
+      "anyOf": [
+        {
+          "title": "LimitOrderDatum",
+          "dataType": "constructor",
+          "index": 0,
+          "fields": [
+            {
+              "title": "owner",
+              "description": "Order owner — receives output, can cancel",
+              "$ref": "#/definitions/aiken~1crypto~1VerificationKeyHash"
+            },
+            {
+              "title": "offer_token",
+              "description": "What the user is offering (sits in the UTxO value)",
+              "$ref": "#/definitions/dex_v2_limit_order~1TokenId"
+            },
+            {
+              "title": "ask_token",
+              "description": "What the user wants in return",
+              "$ref": "#/definitions/dex_v2_limit_order~1TokenId"
+            },
+            {
+              "title": "min_receive",
+              "description": "Minimum amount of ask_token the owner must receive\n This is the PRICE ENFORCEMENT — scooper cannot give less",
+              "$ref": "#/definitions/Int"
+            },
+            {
+              "title": "original_offer",
+              "description": "Original offer amount (for partial fill tracking)",
+              "$ref": "#/definitions/Int"
+            },
+            {
+              "title": "scooper_fee",
+              "description": "Scooper fee in lovelace (flat fee, not percentage — prevents MEV)",
+              "$ref": "#/definitions/Int"
+            },
+            {
+              "title": "order_id",
+              "description": "Unique order ID (hash of original utxo ref) — prevents replay",
+              "$ref": "#/definitions/ByteArray"
+            },
+            {
+              "title": "deadline",
+              "description": "Deadline slot — order expires after this (0 = no expiry)",
+              "$ref": "#/definitions/Int"
+            }
+          ]
+        }
+      ]
+    },
+    "dex_v2_limit_order/OrderAction": {
+      "title": "OrderAction",
+      "anyOf": [
+        {
+          "title": "Fill",
+          "description": "Anyone can fill — validator enforces price",
+          "dataType": "constructor",
+          "index": 0,
+          "fields": [
+            {
+              "title": "output_index",
+              "description": "Index of the output paying the order owner",
+              "$ref": "#/definitions/Int"
+            }
+          ]
+        },
+        {
+          "title": "PartialFill",
+          "description": "Partial fill — remainder stays as new order",
+          "dataType": "constructor",
+          "index": 1,
+          "fields": [
+            {
+              "title": "output_index",
+              "description": "Index of output paying owner partial amount",
+              "$ref": "#/definitions/Int"
+            },
+            {
+              "title": "remainder_index",
+              "description": "Index of output with remaining order",
+              "$ref": "#/definitions/Int"
+            },
+            {
+              "title": "fill_amount",
+              "description": "Amount of offer being filled this time",
+              "$ref": "#/definitions/Int"
+            }
+          ]
+        },
+        {
+          "title": "Cancel",
+          "description": "Owner cancels their order",
+          "dataType": "constructor",
+          "index": 2,
+          "fields": []
+        }
+      ]
+    },
+    "dex_v2_limit_order/TokenId": {
+      "title": "TokenId",
+      "description": "============================================================================\n DEX V2: PERMISSIONLESS LIMIT ORDER BOOK\n ============================================================================\n\n Problem: Traditional UTXO DEX batchers are centralized. A single batcher:\n   1. Can censor orders (refuse to fill them)\n   2. Can reorder for MEV extraction (sandwich attacks)\n   3. Is a single point of failure\n   4. Can frontrun large orders\n\n Solution: Permissionless matching where ANYONE can be the \"scooper\"\n but the validator enforces price execution on-chain, so the scooper\n CANNOT extract MEV — they can only match orders at fair prices.\n\n Architecture:\n   - Each order is a UTxO at the script address\n   - The datum specifies exact price constraints (min receive)\n   - ANY wallet can submit a tx that fills orders (no designated batcher)\n   - The validator checks: did the order owner receive >= min_receive?\n   - Partial fills supported: leftover creates a new order UTxO\n   - Scooper gets a small fee (incentive to match) but CANNOT manipulate price\n\n EVM equivalent: 0x Protocol / Serum CLOB — but fully on-chain & permissionless\n Token identifier (policy_id + asset_name)",
+      "anyOf": [
+        {
+          "title": "TokenId",
+          "dataType": "constructor",
+          "index": 0,
+          "fields": [
+            {
+              "title": "policy",
+              "$ref": "#/definitions/cardano~1assets~1PolicyId"
+            },
+            {
+              "title": "name",
+              "$ref": "#/definitions/cardano~1assets~1AssetName"
+            }
+          ]
+        }
+      ]
+    },
+    "dex_v2_matcher/BatchDatum": {
+      "title": "BatchDatum",
+      "anyOf": [
+        {
+          "title": "BatchDatum",
+          "dataType": "constructor",
+          "index": 0,
+          "fields": [
+            {
+              "title": "scooper",
+              "$ref": "#/definitions/aiken~1crypto~1VerificationKeyHash"
+            },
+            {
+              "title": "num_matches",
+              "$ref": "#/definitions/Int"
+            },
+            {
+              "title": "total_fee",
+              "$ref": "#/definitions/Int"
+            },
+            {
+              "title": "match_root",
+              "$ref": "#/definitions/ByteArray"
+            },
+            {
+              "title": "batch_seq",
+              "$ref": "#/definitions/Int"
+            }
+          ]
+        }
+      ]
+    },
+    "dex_v2_matcher/MatchAction": {
+      "title": "MatchAction",
+      "anyOf": [
+        {
+          "title": "ExecuteBatch",
+          "dataType": "constructor",
+          "index": 0,
+          "fields": [
+            {
+              "title": "matches",
+              "$ref": "#/definitions/List$dex_v2_matcher~1MatchProof"
+            }
+          ]
+        },
+        {
+          "title": "ChallengeBatch",
+          "dataType": "constructor",
+          "index": 1,
+          "fields": []
+        }
+      ]
+    },
+    "dex_v2_matcher/MatchProof": {
+      "title": "MatchProof",
+      "description": "============================================================================\n DEX V2: PERMISSIONLESS MATCHER / ANTI-MEV SCOOP ENGINE\n ============================================================================\n\n The KEY innovation that eliminates centralized batchers:\n\n 1. PRICE ON-CHAIN: Each order's min_receive is in the order datum.\n    The scooper cannot give less. They can give MORE (price improvement).\n\n 2. FLAT FEE: Scooper earns a fixed fee per order, NOT percentage.\n    This removes incentive to manipulate prices for bigger trades.\n\n 3. PERMISSIONLESS: Anyone can scoop. No registration, no staking.\n    Competition between scoopers drives fees to minimum.\n\n 4. DETERMINISTIC: UTXO model means the tx outcome is known at build time.\n    No front-running possible — attacker invalidates victim's tx inputs.\n\n This validator manages the matcher's bond and batch settlement.",
+      "anyOf": [
+        {
+          "title": "MatchProof",
+          "dataType": "constructor",
+          "index": 0,
+          "fields": [
+            {
+              "title": "order_a_ref",
+              "$ref": "#/definitions/ByteArray"
+            },
+            {
+              "title": "order_b_ref",
+              "$ref": "#/definitions/ByteArray"
+            },
+            {
+              "title": "price_num",
+              "$ref": "#/definitions/Int"
+            },
+            {
+              "title": "price_den",
+              "$ref": "#/definitions/Int"
+            },
+            {
+              "title": "amount_a",
+              "$ref": "#/definitions/Int"
+            },
+            {
+              "title": "amount_b",
+              "$ref": "#/definitions/Int"
+            }
+          ]
+        }
+      ]
+    }
+  }
+}

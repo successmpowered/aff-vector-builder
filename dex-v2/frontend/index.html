@@ -1,0 +1,752 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Vector DEX V2 - Permissionless Order Book</title>
+<style>
+  :root {
+    --bg: #0f1117;
+    --surface: #1a1d27;
+    --surface-alt: #222531;
+    --text: #e1e4ea;
+    --text-dim: #8b8fa3;
+    --accent: #6366f1;
+    --accent-hover: #818cf8;
+    --border: #2a2d3a;
+    --green: #22c55e;
+    --red: #ef4444;
+    --yellow: #eab308;
+    --radius: 8px;
+    --font: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+    --mono: 'SF Mono', 'Cascadia Code', 'Consolas', monospace;
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: var(--font);
+    line-height: 1.6;
+    min-height: 100vh;
+  }
+
+  .container {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 24px;
+  }
+
+  /* Header */
+  header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 20px 0;
+    border-bottom: 1px solid var(--border);
+    margin-bottom: 24px;
+    flex-wrap: wrap;
+    gap: 16px;
+  }
+
+  .header-left h1 {
+    font-size: 1.5rem;
+    font-weight: 700;
+    color: var(--text);
+  }
+
+  .header-left h1 span {
+    color: var(--accent);
+  }
+
+  .header-left p {
+    color: var(--text-dim);
+    font-size: 0.85rem;
+    margin-top: 2px;
+  }
+
+  .header-right {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+  }
+
+  .status-badge {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 8px 14px;
+    font-size: 0.8rem;
+  }
+
+  .status-dot {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    background: var(--red);
+    transition: background 0.3s;
+  }
+
+  .status-dot.connected { background: var(--green); }
+  .status-dot.checking { background: var(--yellow); animation: pulse 1s infinite; }
+
+  @keyframes pulse {
+    0%, 100% { opacity: 1; }
+    50% { opacity: 0.4; }
+  }
+
+  .btn {
+    background: var(--accent);
+    color: #fff;
+    border: none;
+    padding: 8px 18px;
+    border-radius: var(--radius);
+    cursor: pointer;
+    font-size: 0.85rem;
+    font-weight: 500;
+    transition: background 0.2s;
+  }
+
+  .btn:hover { background: var(--accent-hover); }
+  .btn:disabled { opacity: 0.5; cursor: not-allowed; }
+
+  .btn-outline {
+    background: transparent;
+    border: 1px solid var(--border);
+    color: var(--text-dim);
+  }
+
+  .btn-outline:hover {
+    background: var(--surface);
+    color: var(--text);
+  }
+
+  /* Config Warning */
+  .config-warning {
+    background: #1c1507;
+    border: 1px solid #854d0e;
+    border-radius: var(--radius);
+    padding: 14px 18px;
+    margin-bottom: 24px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    font-size: 0.85rem;
+    color: var(--yellow);
+  }
+
+  .config-warning.hidden { display: none; }
+
+  /* Cards */
+  .card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 20px;
+    margin-bottom: 20px;
+  }
+
+  .card-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 16px;
+  }
+
+  .card-title {
+    font-size: 1rem;
+    font-weight: 600;
+  }
+
+  .card-subtitle {
+    font-size: 0.8rem;
+    color: var(--text-dim);
+  }
+
+  /* Stats Row */
+  .stats-row {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 16px;
+    margin-bottom: 24px;
+  }
+
+  .stat-card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 16px 20px;
+  }
+
+  .stat-label {
+    font-size: 0.75rem;
+    color: var(--text-dim);
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    margin-bottom: 4px;
+  }
+
+  .stat-value {
+    font-size: 1.4rem;
+    font-weight: 700;
+    font-family: var(--mono);
+  }
+
+  .stat-value.accent { color: var(--accent); }
+  .stat-value.green { color: var(--green); }
+
+  /* Table */
+  .table-wrapper {
+    overflow-x: auto;
+  }
+
+  table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 0.85rem;
+  }
+
+  th {
+    text-align: left;
+    padding: 10px 14px;
+    border-bottom: 1px solid var(--border);
+    color: var(--text-dim);
+    font-weight: 500;
+    font-size: 0.75rem;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    white-space: nowrap;
+  }
+
+  td {
+    padding: 12px 14px;
+    border-bottom: 1px solid var(--border);
+    font-family: var(--mono);
+    font-size: 0.8rem;
+    white-space: nowrap;
+  }
+
+  tr:hover td { background: var(--surface-alt); }
+
+  .tag {
+    display: inline-block;
+    padding: 2px 8px;
+    border-radius: 4px;
+    font-size: 0.7rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.03em;
+  }
+
+  .tag-open { background: #052e16; color: var(--green); }
+  .tag-filled { background: #1e1b4b; color: var(--accent); }
+  .tag-cancelled { background: #1c1917; color: var(--text-dim); }
+  .tag-expired { background: #1c1507; color: var(--yellow); }
+
+  a {
+    color: var(--accent);
+    text-decoration: none;
+  }
+
+  a:hover { text-decoration: underline; }
+
+  .empty-state {
+    text-align: center;
+    padding: 48px 20px;
+    color: var(--text-dim);
+  }
+
+  .empty-state p { font-size: 0.9rem; }
+
+  .spinner {
+    display: inline-block;
+    width: 16px;
+    height: 16px;
+    border: 2px solid var(--border);
+    border-top-color: var(--accent);
+    border-radius: 50%;
+    animation: spin 0.8s linear infinite;
+    margin-right: 8px;
+    vertical-align: middle;
+  }
+
+  @keyframes spin {
+    to { transform: rotate(360deg); }
+  }
+
+  /* Architecture Section */
+  .arch-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    gap: 16px;
+    margin-top: 16px;
+  }
+
+  .arch-card {
+    background: var(--surface-alt);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 16px;
+  }
+
+  .arch-card h4 {
+    color: var(--accent);
+    font-size: 0.9rem;
+    margin-bottom: 6px;
+  }
+
+  .arch-card p {
+    color: var(--text-dim);
+    font-size: 0.8rem;
+    line-height: 1.5;
+  }
+
+  .script-address {
+    font-family: var(--mono);
+    font-size: 0.75rem;
+    color: var(--text-dim);
+    background: var(--bg);
+    padding: 10px 14px;
+    border-radius: var(--radius);
+    word-break: break-all;
+    margin-top: 10px;
+    border: 1px solid var(--border);
+  }
+
+  .last-refresh {
+    font-size: 0.75rem;
+    color: var(--text-dim);
+  }
+
+  .countdown {
+    font-family: var(--mono);
+    color: var(--accent);
+  }
+
+  footer {
+    text-align: center;
+    padding: 32px 0 16px;
+    color: var(--text-dim);
+    font-size: 0.75rem;
+    border-top: 1px solid var(--border);
+    margin-top: 32px;
+  }
+
+  @media (max-width: 640px) {
+    .container { padding: 16px; }
+    header { flex-direction: column; align-items: flex-start; }
+    .stats-row { grid-template-columns: 1fr 1fr; }
+  }
+</style>
+</head>
+<body>
+
+<div class="container">
+
+  <!-- Header -->
+  <header>
+    <div class="header-left">
+      <h1><span>Vector</span> DEX V2</h1>
+      <p>Permissionless Order Book on UTXO</p>
+    </div>
+    <div class="header-right">
+      <div class="status-badge">
+        <div class="status-dot" id="statusDot"></div>
+        <span id="statusText">Checking...</span>
+      </div>
+      <button class="btn" id="refreshBtn" onclick="refreshOrders()">Refresh</button>
+    </div>
+  </header>
+
+  <!-- Config Warning -->
+  <div class="config-warning" id="configWarning">
+    <span>&#9888;</span>
+    <span>Set <code>SCRIPT_ADDRESS</code> in the source to your deployed DEX contract address. See the script at the top of this file.</span>
+  </div>
+
+  <!-- Stats -->
+  <div class="stats-row">
+    <div class="stat-card">
+      <div class="stat-label">Open Orders</div>
+      <div class="stat-value accent" id="statOpen">--</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-label">Total Value Locked</div>
+      <div class="stat-value green" id="statTvl">--</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-label">UTxOs at Script</div>
+      <div class="stat-value" id="statUtxos">--</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-label">Next Refresh</div>
+      <div class="stat-value countdown" id="statCountdown">30s</div>
+    </div>
+  </div>
+
+  <!-- Order Book -->
+  <div class="card">
+    <div class="card-header">
+      <div>
+        <div class="card-title">Order Book</div>
+        <div class="card-subtitle" id="lastRefresh">Not yet loaded</div>
+      </div>
+      <button class="btn btn-outline" onclick="refreshOrders()">
+        <span id="refreshIcon">&#8635;</span> Reload
+      </button>
+    </div>
+    <div class="table-wrapper">
+      <table>
+        <thead>
+          <tr>
+            <th>Order ID</th>
+            <th>Offer (AP3X)</th>
+            <th>Min Receive (AP3X)</th>
+            <th>Owner</th>
+            <th>Status</th>
+            <th>Tx Hash</th>
+          </tr>
+        </thead>
+        <tbody id="orderTableBody">
+          <tr>
+            <td colspan="6" class="empty-state">
+              <p>Loading orders...</p>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <!-- Script Address + TVL -->
+  <div class="card">
+    <div class="card-title" style="margin-bottom: 12px;">Contract Details</div>
+    <div class="stat-label">limit_order Script Address</div>
+    <div class="script-address" id="scriptAddressDisplay">Not configured</div>
+  </div>
+
+  <!-- Architecture -->
+  <div class="card">
+    <div class="card-title" style="margin-bottom: 4px;">Architecture</div>
+    <div class="card-subtitle">DEX V2 uses three PlutusV3 validators working together</div>
+    <div class="arch-grid">
+      <div class="arch-card">
+        <h4>limit_order</h4>
+        <p>
+          Holds individual orders as UTxOs. Each UTxO contains the offered
+          tokens and an inline datum specifying the minimum acceptable
+          receive amount, the owner, and a unique order ID. Anyone can
+          consume (fill) an order by satisfying the min_receive constraint.
+        </p>
+      </div>
+      <div class="arch-card">
+        <h4>amm_pool</h4>
+        <p>
+          Manages liquidity pools for automated market making. Pools hold
+          reserves of two token types and enforce the constant-product
+          invariant (x * y = k). Swaps pull from pool reserves and pay
+          the LP fee on-chain.
+        </p>
+      </div>
+      <div class="arch-card">
+        <h4>matcher</h4>
+        <p>
+          Coordinates multi-order matching in a single transaction. The
+          matcher validator verifies that every filled order in a batch
+          received at least its min_receive, enabling atomic settlement
+          of multiple orders with no partial fills.
+        </p>
+      </div>
+    </div>
+  </div>
+
+  <!-- How It Works -->
+  <div class="card">
+    <div class="card-title" style="margin-bottom: 12px;">How It Works</div>
+    <p style="color: var(--text-dim); font-size: 0.85rem; line-height: 1.7; max-width: 800px;">
+      The DEX V2 order book is fully on-chain and permissionless. When a user places
+      a limit order, they send tokens to the <strong>limit_order</strong> script address
+      with an inline datum describing the trade parameters. The order sits as a UTxO
+      until someone fills it.
+    </p>
+    <p style="color: var(--text-dim); font-size: 0.85rem; line-height: 1.7; max-width: 800px; margin-top: 10px;">
+      <strong>Any wallet</strong> can fill an order &mdash; there is no registration,
+      no staking requirement, and no centralized batcher. The filler constructs a
+      transaction that consumes the order UTxO and sends the owner at least
+      <code>min_receive</code> tokens. The on-chain validator enforces this constraint,
+      making it trustless.
+    </p>
+    <p style="color: var(--text-dim); font-size: 0.85rem; line-height: 1.7; max-width: 800px; margin-top: 10px;">
+      MEV resistance comes from three properties: flat scooper fees (no bidding wars),
+      UTXO determinism (transactions are fully determined before submission), and
+      on-chain price enforcement (validators check min_receive, preventing sandwich attacks).
+    </p>
+  </div>
+
+  <footer>
+    Vector DEX V2 Dashboard &middot; Queries Koios API &middot; Auto-refreshes every 30s
+  </footer>
+
+</div>
+
+<script>
+// ============================================================
+// CONFIGURATION
+// Set this to your deployed limit_order script address.
+// You can compute it from the compiled PlutusV3 script hash,
+// or copy it from the deploy output of place_order.py.
+// ============================================================
+const SCRIPT_ADDRESS = "";
+
+const KOIOS_BASE = "https://koios.vector.testnet.apexfusion.org/api/v1";
+
+// ============================================================
+// State
+// ============================================================
+let orders = [];
+let refreshTimer = null;
+let countdown = 30;
+let koiosConnected = false;
+
+// ============================================================
+// Helpers
+// ============================================================
+function truncate(str, startLen, endLen) {
+  if (!str) return "--";
+  if (str.length <= startLen + endLen + 3) return str;
+  return str.slice(0, startLen) + "..." + str.slice(-endLen);
+}
+
+function lovelaceToAp3x(lovelace) {
+  const n = parseInt(lovelace, 10);
+  if (isNaN(n)) return "--";
+  return (n / 1_000_000).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 6 });
+}
+
+function formatTimestamp(ts) {
+  if (!ts) return "--";
+  const d = new Date(ts * 1000);
+  return d.toLocaleDateString() + " " + d.toLocaleTimeString();
+}
+
+function setStatus(state, text) {
+  const dot = document.getElementById("statusDot");
+  const label = document.getElementById("statusText");
+  dot.className = "status-dot " + state;
+  label.textContent = text;
+}
+
+// ============================================================
+// API
+// ============================================================
+async function fetchUtxos() {
+  if (!SCRIPT_ADDRESS) {
+    return [];
+  }
+
+  const resp = await fetch(KOIOS_BASE + "/address_utxos", {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ "_addresses": [SCRIPT_ADDRESS] })
+  });
+
+  if (!resp.ok) {
+    throw new Error("Koios returned " + resp.status);
+  }
+
+  return await resp.json();
+}
+
+function parseDatum(utxo) {
+  // Attempt to parse inline datum from Koios response
+  const raw = utxo.inline_datum;
+  if (!raw) return null;
+
+  try {
+    // Koios returns inline_datum as a JSON object in Plutus JSON schema
+    // Constructor 0: [owner_pkh, offer_token, ask_token, min_receive,
+    //                  original_offer, scooper_fee, order_id, deadline]
+    let datum = raw;
+    if (typeof datum === "string") {
+      datum = JSON.parse(datum);
+    }
+
+    // Handle Plutus JSON schema format: { constructor: 0, fields: [...] }
+    if (datum && datum.constructor !== undefined && datum.fields) {
+      const f = datum.fields;
+      return {
+        owner_pkh: extractBytes(f[0]),
+        offer_token: extractBytes(f[1]),
+        ask_token: extractBytes(f[2]),
+        min_receive: extractInt(f[3]),
+        original_offer: extractInt(f[4]),
+        scooper_fee: extractInt(f[5]),
+        order_id: extractInt(f[6]),
+        deadline: extractInt(f[7])
+      };
+    }
+
+    // Handle list format: { list: [...] }
+    if (datum && datum.list) {
+      const f = datum.list;
+      return {
+        owner_pkh: extractBytes(f[0]),
+        offer_token: extractBytes(f[1]),
+        ask_token: extractBytes(f[2]),
+        min_receive: extractInt(f[3]),
+        original_offer: extractInt(f[4]),
+        scooper_fee: extractInt(f[5]),
+        order_id: extractInt(f[6]),
+        deadline: extractInt(f[7])
+      };
+    }
+  } catch (e) {
+    console.warn("Failed to parse datum:", e, raw);
+  }
+  return null;
+}
+
+function extractBytes(field) {
+  if (!field) return "";
+  if (typeof field === "string") return field;
+  if (field.bytes !== undefined) return field.bytes;
+  return JSON.stringify(field);
+}
+
+function extractInt(field) {
+  if (!field) return 0;
+  if (typeof field === "number") return field;
+  if (field.int !== undefined) return field.int;
+  return 0;
+}
+
+// ============================================================
+// Render
+// ============================================================
+function renderOrders() {
+  const tbody = document.getElementById("orderTableBody");
+
+  if (orders.length === 0) {
+    tbody.innerHTML = `
+      <tr>
+        <td colspan="6" class="empty-state">
+          <p>${!SCRIPT_ADDRESS
+            ? "No script address configured. Set SCRIPT_ADDRESS in the source."
+            : "No orders found at this script address."}</p>
+        </td>
+      </tr>`;
+    return;
+  }
+
+  tbody.innerHTML = orders.map(function(o) {
+    const datum = o._parsed;
+    const orderId = datum ? datum.order_id : "--";
+    const offer = o.value ? lovelaceToAp3x(o.value) : "--";
+    const minRecv = datum ? lovelaceToAp3x(datum.min_receive) : "--";
+    const owner = datum ? truncate(datum.owner_pkh, 8, 6) : "--";
+    const txHash = o.tx_hash || "";
+    const txIndex = o.tx_index !== undefined ? o.tx_index : "";
+    const status = "open"; // UTxOs at script are open orders
+
+    return `<tr>
+      <td>${orderId}</td>
+      <td>${offer}</td>
+      <td>${minRecv}</td>
+      <td title="${datum ? datum.owner_pkh : ''}">${owner}</td>
+      <td><span class="tag tag-${status}">${status}</span></td>
+      <td>
+        <a href="#" title="${txHash}#${txIndex}">${truncate(txHash, 10, 6)}</a>
+      </td>
+    </tr>`;
+  }).join("");
+}
+
+function updateStats() {
+  document.getElementById("statOpen").textContent = orders.length;
+
+  const totalLovelace = orders.reduce(function(sum, o) {
+    return sum + (parseInt(o.value, 10) || 0);
+  }, 0);
+  document.getElementById("statTvl").textContent = lovelaceToAp3x(totalLovelace) + " AP3X";
+  document.getElementById("statUtxos").textContent = orders.length;
+}
+
+// ============================================================
+// Refresh Logic
+// ============================================================
+async function refreshOrders() {
+  const btn = document.getElementById("refreshBtn");
+  btn.disabled = true;
+  btn.textContent = "Loading...";
+  setStatus("checking", "Querying...");
+
+  try {
+    const utxos = await fetchUtxos();
+    koiosConnected = true;
+    setStatus("connected", "Koios Connected");
+
+    orders = utxos.map(function(u) {
+      u._parsed = parseDatum(u);
+      return u;
+    });
+
+    renderOrders();
+    updateStats();
+
+    const now = new Date();
+    document.getElementById("lastRefresh").textContent =
+      "Last updated: " + now.toLocaleTimeString();
+
+  } catch (e) {
+    console.error("Refresh failed:", e);
+    koiosConnected = false;
+    setStatus("", "Disconnected");
+
+    document.getElementById("orderTableBody").innerHTML = `
+      <tr>
+        <td colspan="6" class="empty-state">
+          <p style="color: var(--red);">Failed to fetch: ${e.message}</p>
+        </td>
+      </tr>`;
+  } finally {
+    btn.disabled = false;
+    btn.textContent = "Refresh";
+    countdown = 30;
+  }
+}
+
+function startCountdown() {
+  setInterval(function() {
+    countdown--;
+    if (countdown <= 0) {
+      countdown = 30;
+      refreshOrders();
+    }
+    document.getElementById("statCountdown").textContent = countdown + "s";
+  }, 1000);
+}
+
+// ============================================================
+// Init
+// ============================================================
+(function init() {
+  // Show/hide config warning
+  if (SCRIPT_ADDRESS) {
+    document.getElementById("configWarning").classList.add("hidden");
+    document.getElementById("scriptAddressDisplay").textContent = SCRIPT_ADDRESS;
+  } else {
+    document.getElementById("scriptAddressDisplay").textContent =
+      "Not configured -- set SCRIPT_ADDRESS in the page source";
+  }
+
+  refreshOrders();
+  startCountdown();
+})();
+</script>
+
+</body>
+</html>

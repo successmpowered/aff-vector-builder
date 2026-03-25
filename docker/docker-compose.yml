@@ -1,0 +1,64 @@
+version: "3.9"
+name: vector-builder-kit
+
+services:
+  # ==========
+  # apex relay
+  # ==========
+  #
+  # Cardano node syncing Vector public testnet.
+  # Prerequisite for: ogmios
+  vector-relay:
+    image: ghcr.io/intersectmbo/cardano-node:10.4.1
+    environment:
+      - CARDANO_BLOCK_PRODUCER=false
+      - CARDANO_CONFIG=/config/configuration.yaml
+      - CARDANO_TOPOLOGY=/config/topology.json
+      - CARDANO_DATABASE_PATH=/data/db
+      - CARDANO_SOCKET_PATH=/ipc/node.socket
+      - CARDANO_LOG_DIR=/data/node.log
+      - CARDANO_BIND_ADDR=0.0.0.0
+      - CARDANO_PORT=5520
+    command:
+      - run
+    volumes:
+      - ./config/node:/config
+      - node-db:/data/db
+      - ./node-ipc:/ipc
+    restart: on-failure
+    healthcheck:
+      test: ["CMD-SHELL", "curl -f 127.0.0.1:12788 || exit 1"]
+      interval: 60s
+      timeout: 10s
+      retries: 5
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "200k"
+        max-file: "10"
+
+  # ======
+  # ogmios
+  # ======
+  #
+  # JSON-RPC gateway to the node. Exposes query + submit on port 1732.
+  # Requires: vector-relay
+  ogmios:
+    image: cardanosolutions/ogmios:v6.8.0
+    restart: on-failure
+    command: [
+      "--host", "0.0.0.0",
+      "--node-socket", "/ipc/node.socket",
+      "--node-config", "/config/configuration.yaml"
+    ]
+    volumes:
+      - ./config/node:/config
+      - ./node-ipc:/ipc
+    ports:
+      - ${OGMIOS_PORT:-1732}:1337
+    depends_on:
+      vector-relay:
+        condition: service_healthy
+
+volumes:
+  node-db:
